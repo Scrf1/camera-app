@@ -1,12 +1,18 @@
+import 'package:camera/camera.dart';
 import 'package:camera_app/camera.dart';
 import 'package:flutter/material.dart';
 
-void main() {
-  runApp(const MyApp());
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  var cameras = await availableCameras();
+  runApp(MyApp(first: cameras.first, second: cameras.last,));
 }
 
 class MyApp extends StatelessWidget {
-  const MyApp({super.key});
+  MyApp({super.key, required this.first, required this.second});
+
+  CameraDescription first;
+  CameraDescription second;
 
   // This widget is the root of your application.
   @override
@@ -16,7 +22,7 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
-      home: CameraPage(),
+      home: CameraPage(first, second),
     );
   }
 }

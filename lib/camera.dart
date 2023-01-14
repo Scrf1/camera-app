@@ -16,13 +16,18 @@ class _CameraPageState extends State<CameraPage> {
   late CameraController _camController;
   late Future<void> _initializeControllerFuture;
 
+  Icon flashIcon = const Icon(Icons.flash_on, color: Colors.white,size: 24,);
+  bool isFlashOn = false;
+  Icon timerOn = const Icon(Icons.timer, color: Colors.white,size: 24);
+  bool isTimerOn = false;
+  Icon rotationIcon = const Icon(Icons.camera_front, color: Colors.white,size: 24);
+  bool isFrontCamUsed = false;
+
   @override
   void initState() {
     super.initState();
     _camController = CameraController(
-      // Get a specific camera from the list of available cameras.
       widget.first,
-      // Define the resolution to use.
       ResolutionPreset.medium,
     );
     _initializeControllerFuture = _camController.initialize();
@@ -38,7 +43,6 @@ class _CameraPageState extends State<CameraPage> {
               child: FutureBuilder<void>(
                 future: _initializeControllerFuture,
                 builder: (context, snapshot) {
-                  print("Connection state >>>>>> ${snapshot.connectionState}");
                   if (snapshot.connectionState == ConnectionState.done) {
                     return CameraPreview(_camController);
                   }
@@ -51,22 +55,100 @@ class _CameraPageState extends State<CameraPage> {
 
           Positioned(
             top: 40,
-            child: Padding(
-              padding: EdgeInsets.all(10),
-              child: Row(
+            width: MediaQuery.of(context).size.width,
+            child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceAround,
                 children: [
                   IconButton(
                       icon: Icon(Icons.settings, color: Colors.white,size: 24,),
-                      onPressed: null)
+                      onPressed: null
+                  ),
+                  IconButton(
+                      icon: flashIcon,
+                      onPressed: toggleFlashLight
+                  ),
+                  IconButton(
+                    icon: timerOn,
+                    onPressed: toggleTimer,
+                  ),
+                  IconButton(
+                      icon: rotationIcon,
+                      onPressed: toggleFrontOrRearCamera
+                  )
                 ],
               ),
-            ),
+          ),
 
+          Positioned(
+            width: MediaQuery.of(context).size.width,
+            bottom: 40,
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceAround,
+                children: [
+                  CircleAvatar(radius: 25, backgroundColor: Colors.white,),
+                  SizedBox(
+                    height: 70,
+                    width: 70,
+                    child: FittedBox(
+                      child: FloatingActionButton(
+                          backgroundColor: Colors.white,
+                          child: Icon(Icons.camera_alt, color: Colors.black),
+                          onPressed: null
+                      ),
+                    ),
+                  ),
+
+                  SizedBox(
+                    height: 50,
+                    width: 50,
+                    child: FittedBox(
+                      child: FloatingActionButton(
+                          backgroundColor: Colors.white,
+                          child: Icon(Icons.video_call, color: Colors.black),
+                          onPressed: null
+                      ),
+                    ),
+                  ),
+                ],
+              ),
           )
         ],
       )
       ,
     );
+  }
+
+  void takePicture() {
+    
+  }
+
+  void toggleFlashLight() {
+    setState(() {
+      if(isFlashOn) {
+        flashIcon = const Icon(Icons.flash_off, color: Colors.white,size: 24,);
+      }
+      else {
+        flashIcon = const Icon(Icons.flash_on, color: Colors.white,size: 24,);
+      }
+      isFlashOn = !isFlashOn;
+    });
+  }
+
+  void toggleTimer() {
+    setState(() {
+    });
+  }
+
+  void toggleFrontOrRearCamera() {
+    setState(() {
+      if(isFrontCamUsed) {
+        rotationIcon = const Icon(Icons.camera_rear, color: Colors.white,size: 24);
+      }
+      else {
+        rotationIcon = const Icon(Icons.camera_front, color: Colors.white,size: 24);
+      }
+      isFrontCamUsed = !isFrontCamUsed;
+    });
   }
 
   @override

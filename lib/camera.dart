@@ -1,4 +1,5 @@
 import 'package:camera/camera.dart';
+import 'package:camera_app/photo_edit.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
@@ -93,7 +94,7 @@ class _CameraPageState extends State<CameraPage> {
                       child: FloatingActionButton(
                           backgroundColor: Colors.white,
                           child: Icon(Icons.camera_alt, color: Colors.black),
-                          onPressed: null
+                          onPressed: takePicture
                       ),
                     ),
                   ),
@@ -119,7 +120,10 @@ class _CameraPageState extends State<CameraPage> {
   }
 
   void takePicture() {
-    
+    Navigator.push(
+        context,
+        MaterialPageRoute(builder: (context) => PhotoEditPage())
+    );
   }
 
   void toggleFlashLight() {

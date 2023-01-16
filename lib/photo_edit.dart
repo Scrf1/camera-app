@@ -1,7 +1,11 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'dart:io';
 
 class PhotoEditPage extends StatefulWidget {
+  String imagePath;
+
+  PhotoEditPage(this.imagePath, {super.key});
+
   @override
   State<StatefulWidget> createState() => _PhotoEditPageState();
 
@@ -27,7 +31,18 @@ class _PhotoEditPageState extends State<PhotoEditPage> {
         ],
       ),
       body: Container(
+        child: Stack(
+          fit: StackFit.expand,
+          children: [
+            FittedBox(
+              fit: BoxFit.fill,
+              child: Container(
+                child: Image.file(File(widget.imagePath)),
+              ),
+            )
 
+          ],
+        ),
       ),
     );
   }

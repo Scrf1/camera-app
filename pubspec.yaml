@@ -38,6 +38,8 @@ dependencies:
   cupertino_icons: ^1.0.2
   camera: ^0.10.1
   image: ^4.0.8
+  path_provider: ^2.0.11
+  torch_light: ^1.0.0
 
 dev_dependencies:
   flutter_test:

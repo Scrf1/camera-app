@@ -1,7 +1,7 @@
 import 'package:camera/camera.dart';
 import 'package:camera_app/photo_edit.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:torch_light/torch_light.dart';
 
 class CameraPage extends StatefulWidget {
   CameraDescription first;
@@ -15,6 +15,8 @@ class CameraPage extends StatefulWidget {
 
 class _CameraPageState extends State<CameraPage> {
   late CameraController _camController;
+  late CameraController _frontCamController;
+  late CameraController _backCamController;
   late Future<void> _initializeControllerFuture;
 
   Icon flashIcon = const Icon(Icons.flash_on, color: Colors.white,size: 24,);
@@ -27,10 +29,15 @@ class _CameraPageState extends State<CameraPage> {
   @override
   void initState() {
     super.initState();
-    _camController = CameraController(
+    _backCamController = CameraController(
       widget.first,
-      ResolutionPreset.medium,
+      ResolutionPreset.max,
     );
+    _frontCamController = CameraController(
+        widget.second,
+        ResolutionPreset.max);
+
+    _camController = _backCamController;
     _initializeControllerFuture = _camController.initialize();
   }
 
@@ -120,10 +127,23 @@ class _CameraPageState extends State<CameraPage> {
   }
 
   void takePicture() {
-    Navigator.push(
-        context,
-        MaterialPageRoute(builder: (context) => PhotoEditPage())
+    flashLight().then(
+            (value) => _camController.takePicture().then(
+                    (image) => Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => PhotoEditPage(image!.path))
+                )
+            )
     );
+  }
+
+  Future<void> flashLight() async {
+    if(isFlashOn) {
+      TorchLight.enableTorch();
+    }
+    else {
+      TorchLight.disableTorch();
+    }
   }
 
   void toggleFlashLight() {
@@ -143,18 +163,25 @@ class _CameraPageState extends State<CameraPage> {
     });
   }
 
-  void toggleFrontOrRearCamera() {
+  void toggleFrontOrRearCamera()  {
     setState(() {
       if(isFrontCamUsed) {
         rotationIcon = const Icon(Icons.camera_rear, color: Colors.white,size: 24);
+        _camController = _frontCamController;
       }
       else {
         rotationIcon = const Icon(Icons.camera_front, color: Colors.white,size: 24);
+        _camController = _backCamController;
       }
       isFrontCamUsed = !isFrontCamUsed;
+
+      _initializeControllerFuture =  _camController.initialize();
     });
   }
 
   @override
-  void dispose() {}
+  void dispose() {
+    _camController.dispose();
+    super.dispose();
+  }
 }

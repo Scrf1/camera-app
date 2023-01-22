@@ -1,7 +1,7 @@
 import 'package:camera/camera.dart';
+import 'package:camera_app/data/flash_light_status.dart';
 import 'package:camera_app/photo_edit.dart';
 import 'package:flutter/material.dart';
-import 'package:torch_light/torch_light.dart';
 
 class CameraPage extends StatefulWidget {
   CameraDescription first;
@@ -19,8 +19,8 @@ class _CameraPageState extends State<CameraPage> {
   late CameraController _backCamController;
   late Future<void> _initializeControllerFuture;
 
-  Icon flashIcon = const Icon(Icons.flash_on, color: Colors.white,size: 24,);
-  bool isFlashOn = false;
+  Icon flashIcon = const Icon(Icons.flash_off, color: Colors.white,size: 24,);
+  int flashIconIdx = 0;
   Icon timerOn = const Icon(Icons.timer, color: Colors.white,size: 24);
   bool isTimerOn = false;
   Icon rotationIcon = const Icon(Icons.camera_front, color: Colors.white,size: 24);
@@ -127,34 +127,33 @@ class _CameraPageState extends State<CameraPage> {
   }
 
   void takePicture() {
-    flashLight().then(
-            (value) => _camController.takePicture().then(
-                    (image) => Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (context) => PhotoEditPage(image!.path))
-                )
-            )
+     _camController.takePicture().then(
+             (image) => Navigator.push(
+                 context,
+                 MaterialPageRoute(builder: (context) => PhotoEditPage(image!.path))
+             )
     );
-  }
-
-  Future<void> flashLight() async {
-    if(isFlashOn) {
-      TorchLight.enableTorch();
-    }
-    else {
-      TorchLight.disableTorch();
-    }
   }
 
   void toggleFlashLight() {
     setState(() {
-      if(isFlashOn) {
+
+      flashIconIdx = (flashIconIdx + 1) % 3;
+
+      if(FlashLightStatus.values[flashIconIdx] == FlashLightStatus.none) {
         flashIcon = const Icon(Icons.flash_off, color: Colors.white,size: 24,);
+        _camController.setFlashMode(FlashMode.off);
       }
-      else {
+      else if(FlashLightStatus.values[flashIconIdx] == FlashLightStatus.auto) {
+        flashIcon = const Icon(Icons.flash_auto, color: Colors.white,size: 24,);
+        _camController.setFlashMode(FlashMode.auto);
+      }
+      else if(FlashLightStatus.values[flashIconIdx] == FlashLightStatus.enabled) {
         flashIcon = const Icon(Icons.flash_on, color: Colors.white,size: 24,);
+        _camController.setFlashMode(FlashMode.torch);
       }
-      isFlashOn = !isFlashOn;
+
+      print("FLASH ICON IDX === $flashIcon  STATUS >>>>>  ${FlashLightStatus.values[flashIconIdx]}");
     });
   }
 

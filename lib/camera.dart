@@ -1,13 +1,18 @@
+import 'dart:io';
+
 import 'package:camera/camera.dart';
 import 'package:camera_app/data/flash_light_status.dart';
 import 'package:camera_app/photo_edit.dart';
 import 'package:flutter/material.dart';
+import 'package:camera_app/services/file_service.dart';
+import 'package:path/path.dart' as path;
 
 class CameraPage extends StatefulWidget {
   CameraDescription first;
   CameraDescription second;
+  String imageFolderPath;
 
-  CameraPage(this.first, this.second);
+  CameraPage(this.first, this.second, this.imageFolderPath);
 
   @override
   State<StatefulWidget> createState() => _CameraPageState();
@@ -25,6 +30,9 @@ class _CameraPageState extends State<CameraPage> {
   bool isTimerOn = false;
   Icon rotationIcon = const Icon(Icons.camera_front, color: Colors.white,size: 24);
   bool isFrontCamUsed = false;
+  late Widget galleryImgAvatar;
+
+  late Future<File> lastTakenPicture;
 
   @override
   void initState() {
@@ -39,6 +47,16 @@ class _CameraPageState extends State<CameraPage> {
 
     _camController = _backCamController;
     _initializeControllerFuture = _camController.initialize();
+    listFilesOfDirectory(widget.imageFolderPath).then((files) {
+      if(files.length > 0) {
+        for(File file in files) {
+          if(['jpg', 'png', 'gif', 'tiff', 'jpeg'].contains(path.extension(file.path).toLowerCase())) {
+            galleryImgAvatar = Image.file(file);
+            break;
+          }
+        }
+      }
+    });
   }
 
   @override
@@ -93,7 +111,13 @@ class _CameraPageState extends State<CameraPage> {
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceAround,
                 children: [
-                  CircleAvatar(radius: 25, backgroundColor: Colors.white,),
+                  FutureBuilder<void>(builder: (context, snapshot) =>
+                      CircleAvatar(
+                        radius: 25,
+                        backgroundColor: Colors.white,
+                        child: galleryImgAvatar,
+                      )
+                  ),
                   SizedBox(
                     height: 70,
                     width: 70,
@@ -152,8 +176,6 @@ class _CameraPageState extends State<CameraPage> {
         flashIcon = const Icon(Icons.flash_on, color: Colors.white,size: 24,);
         _camController.setFlashMode(FlashMode.torch);
       }
-
-      print("FLASH ICON IDX === $flashIcon  STATUS >>>>>  ${FlashLightStatus.values[flashIconIdx]}");
     });
   }
 

@@ -30,7 +30,7 @@ class _CameraPageState extends State<CameraPage> {
   bool isTimerOn = false;
   Icon rotationIcon = const Icon(Icons.camera_front, color: Colors.white,size: 24);
   bool isFrontCamUsed = false;
-  late Widget galleryImgAvatar;
+  //late Widget galleryImgAvatar;
 
   late Future<File> lastTakenPicture;
 
@@ -47,7 +47,7 @@ class _CameraPageState extends State<CameraPage> {
 
     _camController = _backCamController;
     _initializeControllerFuture = _camController.initialize();
-    listFilesOfDirectory(widget.imageFolderPath).then((files) {
+    /*listFilesOfDirectory(widget.imageFolderPath).then((files) {
       if(files.length > 0) {
         for(File file in files) {
           if(['jpg', 'png', 'gif', 'tiff', 'jpeg'].contains(path.extension(file.path).toLowerCase())) {
@@ -56,7 +56,7 @@ class _CameraPageState extends State<CameraPage> {
           }
         }
       }
-    });
+    });*/
   }
 
   @override
@@ -115,7 +115,7 @@ class _CameraPageState extends State<CameraPage> {
                       CircleAvatar(
                         radius: 25,
                         backgroundColor: Colors.white,
-                        child: galleryImgAvatar,
+                        //child: galleryImgAvatar,
                       )
                   ),
                   SizedBox(

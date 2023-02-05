@@ -1,5 +1,7 @@
+import 'package:camera_app/misc/dialog_boxes.dart';
 import 'package:flutter/material.dart';
 import 'dart:io';
+import 'package:image_picker/image_picker.dart';
 
 class PhotoEditPage extends StatefulWidget {
   String imagePath;
@@ -12,6 +14,27 @@ class PhotoEditPage extends StatefulWidget {
 }
 
 class _PhotoEditPageState extends State<PhotoEditPage> {
+
+  late AlertDialog deleteFileDialog;
+  bool deleteFile = false;
+
+  @override
+  void initState() {
+    super.initState();
+
+    deleteFileDialog = DialogBoxes.createDeleteFileDialog(
+      noFn: ()  {
+        Navigator.pop(context);
+      },
+      yesFn: () {
+        deleteFile = true;
+        Navigator.pop(context);
+      }
+    );
+  }
+
+
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -48,10 +71,18 @@ class _PhotoEditPageState extends State<PhotoEditPage> {
   }
 
   void onDeleteClicked() {
-
+    showDialog(
+        context: context,
+        builder: (context) => deleteFileDialog
+    )
+        .then((value) {
+          if(deleteFile) {
+            Navigator.pop(context);
+          }
+    });
   }
 
-  void onSaveClicked() {
+  Future<void> onSaveClicked() async {
 
   }
 

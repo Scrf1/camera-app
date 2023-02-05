@@ -16,7 +16,7 @@ class MyApp extends StatelessWidget {
 
   CameraDescription first;
   CameraDescription second;
-  late String imageFolderPath;
+  String imageFolderPath = '';
 
   // This widget is the root of your application.
   @override

@@ -23,6 +23,8 @@ class _CameraPageState extends State<CameraPage> {
   late CameraController _frontCamController;
   late CameraController _backCamController;
   late Future<void> _initializeControllerFuture;
+  bool _isRecording = false;
+  bool _isRecordingVideo = true;
 
   Icon flashIcon = const Icon(Icons.flash_off, color: Colors.white,size: 24,);
   int flashIconIdx = 0;
@@ -124,7 +126,7 @@ class _CameraPageState extends State<CameraPage> {
                     child: FittedBox(
                       child: FloatingActionButton(
                           backgroundColor: Colors.white,
-                          child: Icon(Icons.camera_alt, color: Colors.black),
+                          child: _isRecordingVideo ?  Icon(Icons.camera_alt, color: Colors.black) : Icon(Icons.stop, color: Colors.red,),
                           onPressed: takePicture
                       ),
                     ),
@@ -137,7 +139,7 @@ class _CameraPageState extends State<CameraPage> {
                       child: FloatingActionButton(
                           backgroundColor: Colors.white,
                           child: Icon(Icons.video_call, color: Colors.black),
-                          onPressed: null
+                          onPressed: _recordVideo
                       ),
                     ),
                   ),
@@ -198,6 +200,28 @@ class _CameraPageState extends State<CameraPage> {
 
       _initializeControllerFuture =  _camController.initialize();
     });
+  }
+
+  _recordVideo() async {
+    setState(() {
+      _isRecordingVideo = !_isRecordingVideo;
+    });
+
+    if(!_isRecordingVideo)
+      return;
+    
+    if (_isRecording) {
+      final file = await _camController.stopVideoRecording();
+      setState(() => _isRecording = false);
+      final route = MaterialPageRoute(
+        fullscreenDialog: true,
+        builder: (_) => PhotoEditPage(file.path),
+      );
+    } else {
+      await _camController.prepareForVideoRecording();
+      await _camController.startVideoRecording();
+      setState(() => _isRecording = true);
+    }
   }
 
   @override
